@@ -1,0 +1,111 @@
+Wyoming Satellite Installation Guide
+Verified with Raspberry PI 4 BookWork Lite 64bit
+
+Install Prerequisites
+
+sudo apt-get update
+sudo apt-get install --no-install-recommends git python3-venv
+
+Download Wyoming Assist
+
+git clone https://github.com/rhasspy/wyoming-satellite.git
+cd wyoming-satellite/
+
+For Respeaker Hat ONLY
+I have been unable to get these drivers to work with a RPI4.  So instead clone this repo to install the drivers...
+DO NOT USE THESE DRIVERS
+cd wyoming-satellite/
+sudo bash etc/install-respeaker-drivers.sh
+
+INSTEAD USE THESE DRIVERS
+git clone https://github.com/HinTak/seeed-voicecard
+cd seeed-voicecard
+sudo ./install.sh
+sudo reboot
+
+
+Create Python Virtual Environment & Install Prerequisites
+cd wyoming-satellite/
+python3 -m venv .venv
+.venv/bin/pip3 install --upgrade pip
+.venv/bin/pip3 install --upgrade wheel setuptools
+.venv/bin/pip3 install -f 'https://synesthesiam.github.io/prebuilt-apps/' -r requirements.txt -r requirements_audio_enhancement.txt -r requirements_vad.txt
+
+Verify Installation
+script/run --help
+
+Verify Audio Devices
+arecord -L
+
+Record Test Audio
+arecord -D plughw:CARD=seeed2micvoicec,DEV=0 -r 16000 -c 1 -f S16_LE -t wav -d 5 test.wav
+
+List Available Speakers
+aplay -L
+
+Playback Test Audio
+aplay -D plughw:CARD=seeed2micvoicec,DEV=0 test.wav
+
+Run Wyoming Satellite as a Service
+sudo systemctl edit --force --full wyoming-satellite.service
+
+###########################
+[Unit]
+Description=Wyoming Satellite
+Wants=network-online.target
+After=network-online.target
+Requires=2mic_leds.service
+
+[Service]
+Type=simple
+ExecStart=/home/pi/wyoming-satellite/script/run \
+    --name 'my satellite' \
+    --uri 'tcp://0.0.0.0:10700' \
+    --mic-command 'arecord -D plughw:CARD=seeed2micvoicec,DEV=0 -r 16000 -c 1 -f S16_LE -t raw' \
+    --snd-command 'aplay -D plughw:CARD=seeed2micvoicec,DEV=0 -r 22050 -c 1 -f S16_LE -t raw' \
+    --event-uri 'tcp://127.0.0.1:10500'
+
+WorkingDirectory=/home/pi/wyoming-satellite
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=default.target
+###########################
+
+Enable and Start the Service
+sudo systemctl enable --now wyoming-satellite.service
+
+For LED Control
+sudo apt-get install python3-spidev python3-gpiozero
+
+Setup LED Control Environment
+cd wyoming-satellite/examples
+python3 -m venv --system-site-packages .venv
+.venv/bin/pip3 install --upgrade pip
+.venv/bin/pip3 install --upgrade wheel setuptools
+.venv/bin/pip3 install 'wyoming==1.5.2'
+
+
+Create LED Control Service
+sudo systemctl edit --force --full 2mic_leds.service
+
+###########################
+[Unit]
+Description=2Mic LEDs
+
+[Service]
+Type=simple
+ExecStart=/home/pi/wyoming-satellite/examples/.venv/bin/python3 2mic_service.py --uri 'tcp://127.0.0.1:10500'
+WorkingDirectory=/home/pi/wyoming-satellite/examples
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=default.target
+###########################
+
+Reload and Restart Services
+sudo systemctl daemon-reload
+sudo systemctl restart wyoming-satellite.service
+sudo systemctl start 2mic_leds.service
