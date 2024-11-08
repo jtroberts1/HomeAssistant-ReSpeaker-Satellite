@@ -17,13 +17,13 @@ I have been unable to get these drivers to work with a RPI4.  So instead cloned 
 https://github.com/HinTak/seeed-voicecard.git
 DO NOT USE THE DRIVERS from the official seeed-voicecard repo
 https://github.com/respeaker/seeed-voicecard.git
-~~ cd wyoming-satellite/
-sudo bash etc/install-respeaker-drivers.sh ~~
+cd wyoming-satellite/
+sudo bash etc/install-respeaker-drivers.sh
 
 ###########################
-__ INSTEAD USE THESE DRIVERS
+INSTEAD USE THESE DRIVERS
 We need to match the branch with the kernel version on the RPI...
-on RPI... "uname -a" to get kernel version __
+on RPI... "uname -a" to get kernel version
 
 https://github.com/jtroberts1/seeed-voicecard.git
 cd seeed-voicecard
