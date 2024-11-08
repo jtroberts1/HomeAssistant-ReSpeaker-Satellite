@@ -20,6 +20,8 @@ sudo bash etc/install-respeaker-drivers.sh
 INSTEAD USE THESE DRIVERS
 git clone https://github.com/HinTak/seeed-voicecard
 cd seeed-voicecard
+git checkout -b v5.9 origin/v5.9
+git status and verify you branch matches kernel version
 sudo ./install.sh
 sudo reboot
 
