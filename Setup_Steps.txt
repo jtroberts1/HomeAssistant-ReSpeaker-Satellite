@@ -18,9 +18,12 @@ cd wyoming-satellite/
 sudo bash etc/install-respeaker-drivers.sh
 
 INSTEAD USE THESE DRIVERS
-git clone https://github.com/HinTak/seeed-voicecard
+We need to match the branch with the kernel version on the RPI...
+on RPI... "uname -a" to get kernel version
+
+https://github.com/jtroberts1/seeed-voicecard.git
 cd seeed-voicecard
-git checkout -b v5.9 origin/v5.9
+git checkout -b v6.6 origin/v6.6
 git status and verify you branch matches kernel version
 sudo ./install.sh
 sudo reboot
