@@ -7,19 +7,23 @@ sudo apt-get update
 sudo apt-get install --no-install-recommends git python3-venv
 
 Download Wyoming Assist
-
 git clone https://github.com/rhasspy/wyoming-satellite.git
 cd wyoming-satellite/
 
+---------------------------
 For Respeaker Hat ONLY
-I have been unable to get these drivers to work with a RPI4.  So instead clone this repo to install the drivers...
-DO NOT USE THESE DRIVERS
-cd wyoming-satellite/
-sudo bash etc/install-respeaker-drivers.sh
+---------------------------
+I have been unable to get these drivers to work with a RPI4.  So instead cloned this repo so I can use the kernel specific branch to install the drivers...
+https://github.com/HinTak/seeed-voicecard.git
+DO NOT USE THE DRIVERS from the official seeed-voicecard repo
+https://github.com/respeaker/seeed-voicecard.git
+~~ cd wyoming-satellite/
+sudo bash etc/install-respeaker-drivers.sh ~~
 
-INSTEAD USE THESE DRIVERS
+###########################
+__ INSTEAD USE THESE DRIVERS
 We need to match the branch with the kernel version on the RPI...
-on RPI... "uname -a" to get kernel version
+on RPI... "uname -a" to get kernel version __
 
 https://github.com/jtroberts1/seeed-voicecard.git
 cd seeed-voicecard
@@ -27,7 +31,7 @@ git checkout -b v6.6 origin/v6.6
 git status and verify you branch matches kernel version
 sudo ./install.sh
 sudo reboot
-
+###########################
 
 Create Python Virtual Environment & Install Prerequisites
 cd wyoming-satellite/
@@ -114,3 +118,5 @@ Reload and Restart Services
 sudo systemctl daemon-reload
 sudo systemctl restart wyoming-satellite.service
 sudo systemctl start 2mic_leds.service
+
+sudo reboot now
