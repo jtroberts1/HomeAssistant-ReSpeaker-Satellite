@@ -26,7 +26,7 @@ INSTEAD USE THESE DRIVERS
 We need to match the branch with the kernel version on the RPI...
 on RPI... "uname -a" to get kernel version
 
-https://github.com/jtroberts1/seeed-voicecard.git
+git clone https://github.com/jtroberts1/seeed-voicecard.git
 cd seeed-voicecard
 git checkout -b v6.6 origin/v6.6
 git status and verify you branch matches kernel version
